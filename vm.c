@@ -2,34 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include "instruction.h"
+#include "libc.h"
 uint64_t *text;
 uint64_t *stack;
 uint64_t *data;
 uint64_t *bss;
 uint64_t ax, bx, cx, *px, *pc, *sp, *bp;
-// instuctions
-enum {
-  SOP,TXT,DAT,BSS,MAB,MAC,MBC,MCB,MCA,MBA,MAP,ADD,SUB,ADC,SBC,MUL,DIV,
-  MOD,MLC,DVC,MDC,AND,ORR,EOR,SHL,SHR,CPL,CEQ,CNE,CGT,CLT,CGE,CLE,NOT,
-  LDI,LDC,LDU,SDR,JMP,JPF,JPT,PSH,POP,CAL,ENT,ADJ,LEV,LEA,LIC,LON
-};
-enum {
-  PRINTF,EXIT
-};
 int virtualMachine();
-int callLibC(int num) {
-  switch(num) {
-    case PRINTF:
-      ax = printf("%s",(char*)px);
-      break;
-    case EXIT:
-      ax = printf("exit(%lu)\n", bx);
-      return 0;
-    default:
-      break;
-  }
-  return 1;
-}
 int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
     uint64_t *restrict data, uint64_t *restrict bss) {
   uint64_t tmp;
