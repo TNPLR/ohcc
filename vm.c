@@ -9,9 +9,9 @@ uint64_t *bss;
 uint64_t ax, bx, cx, *px, *pc, *sp, *bp;
 // instuctions
 enum {
-  MAB,MAC,MBC,MCB,MCA,MBA,MAP,ADD,SUB,ADC,SBC,MUL,DIV,MOD,MLC,DVC,MDC,
-  AND,ORR,EOR,SHL,SHR,CPL,CEQ,CNE,CGT,CLT,CGE,CLE,NOT,LDI,LDC,LDU,SDR,
-  JMP,JPF,JPT,PSH,POP,CAL,ENT,ADJ,LEV,LEA,LIC,LON
+  SOP,TXT,DAT,BSS,MAB,MAC,MBC,MCB,MCA,MBA,MAP,ADD,SUB,ADC,SBC,MUL,DIV,
+  MOD,MLC,DVC,MDC,AND,ORR,EOR,SHL,SHR,CPL,CEQ,CNE,CGT,CLT,CGE,CLE,NOT,
+  LDI,LDC,LDU,SDR,JMP,JPF,JPT,PSH,POP,CAL,ENT,ADJ,LEV,LEA,LIC,LON
 };
 enum {
   PRINTF,EXIT
@@ -20,32 +20,123 @@ int virtualMachine();
 int callLibC(int num) {
   switch(num) {
     case PRINTF:
-      ax = printf("%s",px);
+      ax = printf("%s",(char*)px);
       break;
     case EXIT:
-      ax = printf("exit(%d)\n", bx);
+      ax = printf("exit(%lu)\n", bx);
       return 0;
     default:
       break;
   }
   return 1;
 }
+int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
+    uint64_t *restrict data, uint64_t *restrict bss) {
+  uint64_t tmp;
+  fread(&tmp, sizeof(uint64_t), 1, fPtr);
+  if (tmp != SOP) {
+    printf("Executive file not correct as OHVM.\n");
+    return -1;
+  }
+  fread(&tmp, sizeof(uint64_t), 1, fPtr);
+  pc = text + tmp;
+  fread(&tmp, sizeof(uint64_t), 1, fPtr);
+  if (tmp != TXT) {
+    printf("Executive file not correct as OHVM.\n");
+    return -1;
+  }
+  fread(&tmp, sizeof(uint64_t), 1, fPtr);
+  while (1) {
+    if (tmp == TXT) {
+      uint64_t tmp2;
+      tmp2 = tmp;
+      fread(&tmp, sizeof(uint64_t), 1, fPtr);
+      if (tmp == TXT) {
+        break; // Go to .data
+      } else {
+        *text++ = tmp2;
+        *text++ = tmp;
+        fread(&tmp, sizeof(uint64_t), 1, fPtr);
+      }
+    } else {
+      *text++ = tmp;
+      fread(&tmp, sizeof(uint64_t), 1, fPtr);
+    }
+  }
+  fread(&tmp, sizeof(uint64_t), 1, fPtr);
+  if (tmp != DAT) {
+    printf("Executive file not correct as OHVM.\n");
+    return -1;
+  }
+  fread(&tmp, sizeof(uint64_t), 1, fPtr);
+  while (1) {
+    if (tmp == DAT) {
+      uint64_t tmp2;
+      tmp2 = tmp;
+      fread(&tmp, sizeof(uint64_t), 1, fPtr);
+      if (tmp == DAT) {
+        break; // Go to .data
+      } else {
+        *data++ = tmp2;
+        *data++ = tmp;
+        fread(&tmp, sizeof(uint64_t), 1, fPtr);
+      }
+    } else {
+      *data++ = tmp;
+      fread(&tmp, sizeof(uint64_t), 1, fPtr);
+    }
+  }
+  fread(&tmp, sizeof(uint64_t), 1, fPtr);
+  if (tmp != BSS) {
+    printf("Executive file not correct as OHVM.\n");
+    return -1;
+  }
+  fread(&tmp, sizeof(uint64_t), 1, fPtr);
+  while (1) {
+    if (tmp == BSS) {
+      uint64_t tmp2;
+      tmp2 = tmp;
+      fread(&tmp, sizeof(uint64_t), 1, fPtr);
+      if (tmp == BSS) {
+        break; // Go to .data
+      } else {
+        *bss++ = tmp2;
+        *bss++ = tmp;
+        fread(&tmp, sizeof(uint64_t), 1, fPtr);
+      }
+    } else {
+      *bss++ = tmp;
+      fread(&tmp, sizeof(uint64_t), 1, fPtr);
+    }
+  }
+  return 0;
+}
 int main(int argc, char* argv[]) {
+  if (argc < 2) {
+    printf("Unexpect arguments\n");
+    return -1;
+  }
+  FILE *fPtr;
+  fPtr = fopen(argv[1], "rb");
+  if (!fPtr) {
+    printf("Could not open this file.\n");
+    return -1;
+  }
   uint64_t poolsize = 4096;
   if (!(text = (uint64_t*)malloc(poolsize))) {
-    printf("Could not malloc(%d) for text area.", poolsize);
+    printf("Could not malloc(%lu) for text area.", poolsize);
     return -1;
   }
   if (!(stack = (uint64_t*)malloc(poolsize))) {
-    printf("Could not malloc(%d) for stack area.", poolsize);
+    printf("Could not malloc(%lu) for stack area.", poolsize);
     return -1;
   }
   if (!(data = (uint64_t*)malloc(poolsize))) {
-    printf("Could not malloc(%d) for data area.", poolsize);
+    printf("Could not malloc(%lu) for data area.", poolsize);
     return -1;
   }
   if (!(bss = (uint64_t*)malloc(poolsize))) {
-    printf("Could not malloc(%d) for bss area.", poolsize);
+    printf("Could not malloc(%lu) for bss area.", poolsize);
     return -1;
   }
 
@@ -53,16 +144,21 @@ int main(int argc, char* argv[]) {
   memset(stack, 0, poolsize);
   memset(data, 0, poolsize);
   memset(bss, 0, poolsize);
-
+  readBitCode(fPtr, text, data, bss);
   px = bp = sp = (uint64_t*)((uint64_t)stack + poolsize);
   ax = 0;
   bx = 0;
   cx = 0;
   virtualMachine();
+  free(text);
+  free(stack);
+  free(data);
+  free(bss);
   return 0;
 }
 int virtualMachine() {
-  int op, *tmp;
+  int op;
+  //int* tmp;
   while (1) {
     op = *pc++;
     if (op == MAB) {
@@ -100,9 +196,9 @@ int virtualMachine() {
     } else if (op == MDC) {
       ax = (uint64_t)((int64_t)bx % (int64_t)cx);
     } else if (op == AND) {
-      ax = bx && cx;
+      ax = bx & cx;
     } else if (op == ORR) {
-      ax = bx || cx;
+      ax = bx | cx;
     } else if (op == EOR) {
       ax = bx ^ cx;
     } else if (op == SHL) {

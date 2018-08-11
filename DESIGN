@@ -24,6 +24,10 @@ bp
 	Index: base pointer
 
 
+sop start of program
+txt .text segment
+dat .data segment
+bss .bss segment
 mab // bx = ax
 mac // cx = ax
 mbc // bx = cx
@@ -70,3 +74,26 @@ lev //
 lea // 
 lic // call libc of value bx
 lon $number // load number into ax
+
+
+The bit virtual code
+sop
+_start position
+txt
+...
+... // .text
+...
+txt
+txt
+dat
+...
+... // .data
+...
+dat
+dat
+bss
+...
+... // .bss
+...
+bss
+bss
