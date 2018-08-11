@@ -97,3 +97,14 @@ bss
 ...
 bss
 bss
+
+assembly
+Besides all the instruction, there are some more command
+ASCII	NAME	"...........\n.........."
+BYTE	NAME	VALUE
+WORD	NAME	VALUE
+DWORD	NAME	VALUE
+QUAD	NAME	VALUE
+LABEL	NAME
+LON	NAME	// Read position
+LON	[NAME]	// Read the value
