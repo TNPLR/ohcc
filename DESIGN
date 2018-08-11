@@ -1,0 +1,72 @@
+OHCC is a compiler - optimizer - virtual machine of any support languages.
+Any language will be change to C.
+Then, it will optimize C code.
+It will use VM to run this code.
+
+
+VM code (OHVM asm)
+
+registers
+ax
+	For major usage
+	It's index is the calculation result.
+bx
+	For the first operator storage.
+cx
+	For the second operator storage.
+px
+	Pointer register
+pc
+	Index: the program running
+sp
+	Index: stack top
+bp
+	Index: base pointer
+
+
+mab // bx = ax
+mac // cx = ax
+mbc // bx = cx
+mcb // bx = cx
+mca // ax = cx
+mba // ax = bx
+map // px = ax
+add // ax = bx + cx (unsigned)
+sub // ax = bx - cx (unsigned)
+adc // ax = bx + cx (signed)
+sbc // ax = bx - cx (signed)
+mul // ax = bx * cx (unsigned)
+div // ax = bx / cx (unsigned)
+mod // ax = bx % cx (unsigned)
+mlc // ax = bx * cx (signed)
+bvc // ax = bx / cx (signed)
+mdc // ax = bx % cx (signed)
+and // ax = bx && cx
+orr // ax = bx || cx
+eor // ax = bx ^ cx
+shl // ax = bx << cx
+shr // ax = bx >> cx
+cpl // ax = ~bx;
+ceq // ax = bx == cx
+cne // ax = bx != cx
+cgt // ax = bx > cx
+clt // ax = bx < cx
+cge // ax = bx >= cx
+cle // ax = bx <= cx
+not // ax = !bx;
+ldi // ax = *(int*)px (interger)
+ldc // ax = *(char*)px (charactor)
+ldu // ax = *(unsigned int*)px (unsigned interger)
+sdr // *px = ax (store ax to px)
+jmp // goto px
+jpf // goto px if bx == false
+jpt // goto px if bx == true
+psh // push bx onto stack
+pop // pop stack to ax
+cal // call px
+ent // make new call frame
+adj // remove arguments from frame
+lev // 
+lea // 
+lic // call libc of value bx
+lon $number // load number into ax
