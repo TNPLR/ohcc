@@ -1,17 +1,19 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include "instruction.h"
 int assembler(FILE *fin, FILE *fout);
-int preprocessor(FILE *fin, char *tmpfilename);
+int preprocessor(FILE *fin, FILE *ftmp);
 int main(int argc, char* argv[]) {
   if (argc < 3) {
     printf("Bad arguments\n");
     return -1;
   }
-  FILE *fin, *fout;
+  FILE *fin, *fout, *ftmp;
   fin = fopen(argv[1], "r");
   fout = fopen(argv[2], "wb");
+  ftmp = fopen(".ohastmp", "w");
   if (!fin) {
     printf("File read fail.\n");
     return -1;
@@ -20,13 +22,53 @@ int main(int argc, char* argv[]) {
     printf("File cannot write.\n");
     return -1;
   }
-  assembler(fin, fout);
+  if (!ftmp) {
+    printf("TMP file of preprocessor error.\n");
+    exit(-1);
+  }
+  //preprocessor(fin, ftmp);
+  assembler(ftmp, fout);
   fclose(fin);
   fclose(fout);
   return 0;
 }
-int preprocessor(FILE *fin, char *tmpfilename) {
-  // do nothing yet
+struct label {
+  char name[32];
+  uint64_t* position;
+};
+struct label label_array[128];
+int label_count = 0;
+int preprocessor(FILE *fin, FILE *ftmp) {
+  uint64_t* count = 0;
+  char read[32];
+  while ((fscanf(fin, "%s", read)) != EOF) {
+    if (strcmp(read, "LON")) {
+      count += 2;
+    } else if (strcmp(read, "ASCII")) {
+      fscanf(fin, "%s", label_array[label_count].name);
+      label_array[label_count].position = count;
+      count += strlen(label_array[label_count].name) + 1;
+      ++label_count;
+    } else if (strcmp(read, "LABEL")) {
+      fscanf(fin, "%s", label_array[label_count].name);
+      label_array[label_count].position = count;
+      ++label_count;
+    } else {
+      ++count;
+    }
+  }
+  rewind(fin);
+  while ((fscanf(fin, "%s", read)) != EOF) {
+    fprintf(ftmp, "%s", read);
+    if (strcmp(read, "LON")) {
+      for (int i = 0; i < label_count; ++i) {
+        if (strcmp(read, label_array[label_count].name)) {
+          //fprintf("%d")
+        }
+      }
+    }
+  }
+  return 0;
 }
 int assembler(FILE *fin, FILE *fout) {
   uint64_t tmp;
@@ -126,15 +168,17 @@ int assembler(FILE *fin, FILE *fout) {
       tmp = ADJ;
     } else if (strcmp(read, "LEV")) {
       tmp = LEV;
-    } else if (strcmp(read, "LEQ")) {
-      tmp = LEQ;
+    } else if (strcmp(read, "LEA")) {
+      tmp = LEA;
     } else if (strcmp(read, "LIC")) {
       tmp = LIC;
     } else if (strcmp(read, "LON")) {
       tmp = LON;
       fwrite(&tmp, sizeof(uint64_t), 1, fout);
-      
-      fscanf(fin, "%d", read);
+      uint64_t tread = 0;
+      fscanf(fin, "%lu", &tread);
+      fwrite(&tread, sizeof(uint64_t), 1, fout);
+      continue;
     } else if (strcmp(read, "ASCII")) {
       tmp = TXT;
     } else if (strcmp(read, "BYTE")) {

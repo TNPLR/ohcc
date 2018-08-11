@@ -106,5 +106,12 @@ WORD	NAME	VALUE
 DWORD	NAME	VALUE
 QUAD	NAME	VALUE
 LABEL	NAME
-LON	NAME	// Read position
-LON	[NAME]	// Read the value
+LON	$NAME	// Read position
+LON	NUMBER
+
+PROGRAM
+SOP
+(_Start)
+TXT
+QUAD Datasegment
+QUAD bsssegment
