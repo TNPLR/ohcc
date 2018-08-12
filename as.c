@@ -87,7 +87,7 @@ int preprocessor(FILE *fin, FILE *ftmp) {
       fscanf(fin, "%s", read);
       for (int i = 0; i < label_count; ++i) {
         if (!strcmp(read, label_array[i].name)) {
-          fprintf(ftmp, "%lu\n", label_array[i].position);
+          fprintf(ftmp, "%lu\n", (uint64_t)((uint64_t*)0+label_array[i].position));
           printf("%lu\n", (uint64_t)((uint64_t*)0+label_array[i].position));
           check = 1;
           break;

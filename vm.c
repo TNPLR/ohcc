@@ -11,6 +11,16 @@ uint64_t *bss;
 uint64_t ax, bx, cx, *px, *pc, *sp, *bp;
 uint64_t *pro_text, *pro_data, *pro_bss;
 int virtualMachine();
+uint64_t* segment_mem_pos(uint64_t* mem) {
+  if (px >= pro_bss) {
+    return (uint64_t*)((uint64_t)bss + (uint64_t)px);
+  } else if (px >= pro_data) {
+    return (uint64_t*)((uint64_t)data + (uint64_t)px);
+  } else if (px > pro_text) {
+    return (uint64_t*)((uint64_t)text + (uint64_t)px);
+  }
+  return 0;
+}
 int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
     uint64_t *restrict data, uint64_t *restrict bss) {
   uint64_t tmp;
@@ -20,8 +30,10 @@ int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
     return -1;
   }
   fread(&tmp, sizeof(uint64_t), 1, fPtr);
-  pc = text + tmp;
-
+  printf("Text: %p\n", text);
+  //pc = (uint64_t*)((uint64_t)text + tmp);
+  pc = text + 1;
+  printf("pc: %p\n", pc);
   fread(&pro_text, sizeof(uint64_t), 1, fPtr);
   fread(&pro_data, sizeof(uint64_t), 1, fPtr);
   fread(&pro_bss, sizeof(uint64_t), 1, fPtr);
@@ -215,13 +227,7 @@ int virtualMachine() {
     } else if (op == LDC) {
       ax = (uint64_t)(*(char*)px);
     } else if (op == LDU) {
-      if (px >= pro_bss) {
-        ax = *(uint64_t*)((uint64_t)bss + (uint64_t)px);
-      } else if (px >= pro_data) {
-        ax = *(uint64_t*)((uint64_t)data + (uint64_t)px);
-      } else if (px > pro_text) {
-        ax = *(uint64_t*)((uint64_t)text + (uint64_t)px);
-      }
+      ax = *segment_mem_pos(px);
     } else if (op == SDR) {
       *px = ax;
     } else if (op == JMP) {
