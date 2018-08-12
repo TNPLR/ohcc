@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "libc.h"
+#include "libcnum.h"
 extern uint64_t ax, bx, cx, *px, *pc, *sp, *bp;
 int callLibC(uint64_t num) {
   switch(num) {

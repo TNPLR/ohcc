@@ -124,7 +124,9 @@ int main(int argc, char* argv[]) {
   memset(stack, 0, poolsize);
   memset(data, 0, poolsize);
   memset(bss, 0, poolsize);
-  readBitCode(fPtr, text, data, bss);
+  if (readBitCode(fPtr, text, data, bss) == -1) {
+    return -1;
+  }
   px = bp = sp = (uint64_t*)((uint64_t)stack + poolsize);
   ax = 0;
   bx = 0;
