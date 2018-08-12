@@ -9,17 +9,23 @@ uint64_t *stack;
 uint64_t *data;
 uint64_t *bss;
 uint64_t ax, bx, cx, *px, *pc, *sp, *bp;
+uint64_t *pro_text, *pro_data, *pro_bss;
 int virtualMachine();
 int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
     uint64_t *restrict data, uint64_t *restrict bss) {
   uint64_t tmp;
   fread(&tmp, sizeof(uint64_t), 1, fPtr);
-  if (tmp != SOP) {
+  if (tmp != LON) {
     printf("Executive file not correct as OHVM.\n");
     return -1;
   }
   fread(&tmp, sizeof(uint64_t), 1, fPtr);
   pc = text + tmp;
+
+  fread(&pro_text, sizeof(uint64_t), 1, fPtr);
+  fread(&pro_data, sizeof(uint64_t), 1, fPtr);
+  fread(&pro_bss, sizeof(uint64_t), 1, fPtr);
+  printf("%lu %lu %lu\n", (uint64_t)pro_text, (uint64_t)pro_data, (uint64_t)pro_bss);
   fread(&tmp, sizeof(uint64_t), 1, fPtr);
   if (tmp != TXT) {
     printf("Executive file not correct as OHVM.\n");
@@ -127,6 +133,7 @@ int main(int argc, char* argv[]) {
   if (readBitCode(fPtr, text, data, bss) == -1) {
     return -1;
   }
+  printf("Done\n");
   px = bp = sp = (uint64_t*)((uint64_t)stack + poolsize);
   ax = 0;
   bx = 0;
@@ -208,7 +215,13 @@ int virtualMachine() {
     } else if (op == LDC) {
       ax = (uint64_t)(*(char*)px);
     } else if (op == LDU) {
-      ax = *px;
+      if (px >= pro_bss) {
+        ax = *(uint64_t*)((uint64_t)bss + (uint64_t)px);
+      } else if (px >= pro_data) {
+        ax = *(uint64_t*)((uint64_t)data + (uint64_t)px);
+      } else if (px > pro_text) {
+        ax = *(uint64_t*)((uint64_t)text + (uint64_t)px);
+      }
     } else if (op == SDR) {
       *px = ax;
     } else if (op == JMP) {

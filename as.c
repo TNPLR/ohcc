@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "libcas.h"
 #include "instruction.h"
-int assembler(FILE *fin, FILE *fout);
+int assembler(FILE *ftmp, FILE *fout);
 int preprocessor(FILE *fin, FILE *ftmp);
 int main(int argc, char* argv[]) {
   if (argc < 3) {
@@ -24,59 +24,92 @@ int main(int argc, char* argv[]) {
     return -1;
   }
   if (!ftmp) {
-    printf("TMP file of preprocessor error.\n");
-    exit(-1);
+    printf("FILE cannot write.\n");
+    return -1;
   }
-  //preprocessor(fin, ftmp);
+  preprocessor(fin, ftmp);
+  fclose(ftmp);
+  ftmp = fopen(".ohastmp", "r");
+  if (!ftmp) {
+    printf("File read error.\n");
+    return -1;
+  }
   //assembler(ftmp, fout);
-  assembler(fin, fout);
+  assembler(ftmp, fout);
   fclose(fin);
   fclose(fout);
-  fclose(ftmp);
   return 0;
 }
 struct label {
   char name[32];
-  uint64_t* position;
+  uint64_t position;
 };
 struct label label_array[128];
 int label_count = 0;
 int preprocessor(FILE *fin, FILE *ftmp) {
-  uint64_t* count = 0;
-  char read[32];
+  uint64_t count = 0;
+  char read[256];
   while ((fscanf(fin, "%s", read)) != EOF) {
     if (!strcmp(read, "LON")) {
+      fscanf(fin, "%*s");
       count += 2;
     } else if (!strcmp(read, "ASCII")) {
-      fscanf(fin, "%s", label_array[label_count].name);
+      fscanf(fin, "%s \"%*[A-Za-z ]\"", label_array[label_count].name);
       label_array[label_count].position = count;
+      printf("%s:%lu\n", label_array[label_count].name, count);
       count += strlen(label_array[label_count].name) + 1;
       ++label_count;
     } else if (!strcmp(read, "LABEL")) {
       fscanf(fin, "%s", label_array[label_count].name);
+      printf("%s:%lu\n", label_array[label_count].name, count);
       label_array[label_count].position = count;
       ++label_count;
+    } else if (!strcmp(read, "QUAD")) {
+      fscanf(fin, "%s %*u", label_array[label_count].name);
+      printf("%s:%lu\n", label_array[label_count].name, count);
+      label_array[label_count].position = count;
+      ++count;
+      ++label_count;
+    } else if (!(strcmp(read, "TXT") &&
+        strcmp(read, "DAT") &&
+        strcmp(read, "BSS"))) {
+      count = 0;
     } else {
       ++count;
     }
   }
   rewind(fin);
+  int check = 0;
+  uint64_t tmp_num;
   while ((fscanf(fin, "%s", read)) != EOF) {
-    fprintf(ftmp, "%s", read);
+    fprintf(ftmp, "%s\n", read);
     if (!strcmp(read, "LON")) {
+      fscanf(fin, "%s", read);
       for (int i = 0; i < label_count; ++i) {
-        if (!strcmp(read, label_array[label_count].name)) {
-          //fprintf("%d")
+        if (!strcmp(read, label_array[i].name)) {
+          fprintf(ftmp, "%lu\n", label_array[i].position);
+          printf("%lu\n", (uint64_t)((uint64_t*)0+label_array[i].position));
+          check = 1;
+          break;
         }
       }
+      if (check == 0) {
+        sscanf(read, "%lu", &tmp_num);
+        fprintf(ftmp, "%lu\n", tmp_num);
+      }
+      check = 0;
+    } else if (!strcmp(read, "ASCII")) {
+      char name_[32];
+      fscanf(fin, "%s \"%[A-z ]\"", name_, read);
+      fprintf(ftmp, "%s\n\"%s\"\n", name_, read);
     }
   }
   return 0;
 }
-int assembler(FILE *fin, FILE *fout) {
+int assembler(FILE *ftmp, FILE *fout) {
   uint64_t tmp;
-  char read[32];
-  while ((fscanf(fin, "%s", read)) != EOF) {
+  char read[256];
+  while ((fscanf(ftmp, "%s", read)) != EOF) {
     printf("%s\n", read);
     if (!strcmp(read, "SOP")) {
       tmp = SOP; 
@@ -177,27 +210,31 @@ int assembler(FILE *fin, FILE *fout) {
     } else if (!strcmp(read, "LIC")) {
       tmp = LIC;
       fwrite(&tmp, sizeof(uint64_t), 1, fout);
-      fscanf(fin, "%s", read);
+      fscanf(ftmp, "%s", read);
       tmp = chooseLibC(read);
     } else if (!strcmp(read, "LON")) {
       tmp = LON;
       fwrite(&tmp, sizeof(uint64_t), 1, fout);
       uint64_t tread = 0;
-      fscanf(fin, "%lu", &tread);
+      fscanf(ftmp, "%lu", &tread);
       fwrite(&tread, sizeof(uint64_t), 1, fout);
       continue;
     } else if (!strcmp(read, "ASCII")) {
-      tmp = TXT;
+      memset(read, 0, 256);
+      fscanf(ftmp, "%*s\n\"%[A-Za-z ]\"", read);
+      fwrite(read, sizeof(char), sizeof(uint64_t)*(strlen(read)/sizeof(uint64_t) + 1) , fout);
+      continue;
     } else if (!strcmp(read, "BYTE")) {
-      tmp = TXT;
+      continue;
     } else if (!strcmp(read, "WORD")) {
-      tmp = TXT;
+      continue;
     } else if (!strcmp(read, "DWORD")) {
-      tmp = TXT;
+      continue;
     } else if (!strcmp(read, "QUAD")) {
-      tmp = TXT;
+      fscanf(ftmp, "%*s\n%lu", &tmp);
     } else if (!strcmp(read, "LABEL")) {
-      tmp = TXT;
+      fscanf(ftmp, "%*s");
+      continue;
     } else {
       printf("Error\n");
       return -1;
