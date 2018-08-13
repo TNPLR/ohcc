@@ -93,7 +93,7 @@ int preprocessor(FILE *fin, FILE *ftmp) {
       label_array[label_count].position = count;
       ++label_count;
     } else if (!strcmp(read, "QUAD")) {
-      fscanf(fin, "%s %*u", label_array[label_count].name);
+      fscanf(fin, "%s %*s", label_array[label_count].name);
       ++count;
       if (!strcmp(label_array[label_count].name, "*")) {
         continue; // unnamed quad
