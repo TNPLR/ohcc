@@ -94,9 +94,12 @@ int preprocessor(FILE *fin, FILE *ftmp) {
       ++label_count;
     } else if (!strcmp(read, "QUAD")) {
       fscanf(fin, "%s %*u", label_array[label_count].name);
+      ++count;
+      if (!strcmp(label_array[label_count].name, "*")) {
+        continue; // unnamed quad
+      }
       printf("%s:%lu\n", label_array[label_count].name, count);
       label_array[label_count].position = count;
-      ++count;
       ++label_count;
     } else if (!(strcmp(read, "TXT") &&
         strcmp(read, "DAT") &&
