@@ -101,17 +101,32 @@ bss
 assembly
 Besides all the instruction, there are some more command
 ASCII	NAME	"...........\n.........."
-BYTE	NAME	VALUE
-WORD	NAME	VALUE
-DWORD	NAME	VALUE
-QUAD	NAME	VALUE
+QUAD	NAME	VALUE or LABEL
+QUAD	*	VALUE or LABEL // unnamed quad
 LABEL	NAME
-LON	$NAME	// Read position
+LON	NAME	// Read position
 LON	NUMBER
 
 PROGRAM
-SOP
-(_Start)
+LON MAIN
+QUAD * TEXT
+QUAD * DATA
+QUAD * BSS
 TXT
-QUAD Datasegment
-QUAD bsssegment
+LABEL TEXT
+... // function
+(SOP) //recommend add this SOP
+TXT
+TXT
+DAT
+LABEL DATA
+... // data segment
+(SOP) //recommend add this SOP
+DAT
+DAT
+BSS
+LABEL BSS
+... // bss segment
+(SOP) //recommend add this SOP
+BSS
+BSS
