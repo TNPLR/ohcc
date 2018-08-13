@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   FILE *fin, *fout, *ftmp;
   fin = fopen(argv[1], "r");
   fout = fopen(argv[2], "wb");
-  ftmp = fopen(".ohastmp", "r");
+  ftmp = fopen(".ohastmp", "w");
   if (!fin) {
     printf("File read fail.\n");
     return -1;
@@ -55,7 +55,6 @@ int main(int argc, char* argv[]) {
     printf("FILE cannot write.\n");
     return -1;
   }
-  fclose(ftmp);
   preprocessor(fin, ftmp);
   fclose(ftmp);
   ftmp = fopen(".ohastmp", "r");
@@ -102,6 +101,7 @@ int preprocessor(FILE *fin, FILE *ftmp) {
     } else if (!(strcmp(read, "TXT") &&
         strcmp(read, "DAT") &&
         strcmp(read, "BSS"))) {
+      continue;
     } else {
       ++count;
     }
@@ -130,6 +130,23 @@ int preprocessor(FILE *fin, FILE *ftmp) {
       char name_[32];
       fscanf(fin, "%s \"%[A-z ]\"", name_, read);
       fprintf(ftmp, "%s\n\"%s\"\n", name_, read);
+    } else if (!strcmp(read, "QUAD")) {
+      char name_[32];
+      fscanf(fin, "%s %s", name_, read);
+      fprintf(ftmp, "%s\n", name_);
+      for (int i = 0; i < label_count; ++i) {
+        if (!strcmp(read, label_array[i].name)) {
+          fprintf(ftmp, "%lu\n", (uint64_t)((uint64_t*)0+label_array[i].position));
+          printf("%lu\n", (uint64_t)((uint64_t*)0+label_array[i].position));
+          check = 1;
+          break;
+        }
+      }
+      if (check == 0) {
+        sscanf(read, "%lu", &tmp_num);
+        fprintf(ftmp, "%lu\n", tmp_num);
+      }
+      check = 0;
     }
   }
   return 0;

@@ -13,12 +13,12 @@ uint64_t ax, bx, cx, *px, *pc, *sp, *bp;
 uint64_t *pro_text, *pro_data, *pro_bss;
 int virtualMachine();
 uint64_t* segment_mem_pos(uint64_t* mem) {
-  if (px >= pro_bss) {
-    return (uint64_t*)((uint64_t)bss + (uint64_t)px);
-  } else if (px >= pro_data) {
-    return (uint64_t*)((uint64_t)data + (uint64_t)px);
-  } else if (px > pro_text) {
-    return (uint64_t*)((uint64_t)text + (uint64_t)px);
+  if (mem >= pro_bss) {
+    return (uint64_t*)((uint64_t)bss + ((uint64_t)mem - (uint64_t)pro_bss));
+  } else if (mem >= pro_data) {
+    return (uint64_t*)((uint64_t)data + ((uint64_t)mem - (uint64_t)pro_data));
+  } else if (mem > pro_text) {
+    return (uint64_t*)((uint64_t)text + ((uint64_t)mem - (uint64_t)pro_text));
   }
   return 0;
 }
@@ -31,10 +31,11 @@ int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
     return -1;
   }
   fread(&tmp, sizeof(uint64_t), 1, fPtr);
-  pc = (uint64_t*)((uint64_t)text + tmp);
+  pc = (uint64_t*)tmp;
   fread(&pro_text, sizeof(uint64_t), 1, fPtr);
   fread(&pro_data, sizeof(uint64_t), 1, fPtr);
   fread(&pro_bss, sizeof(uint64_t), 1, fPtr);
+  pc = segment_mem_pos(pc);
   //pc = text + 1;
 #ifdef DEBUG
   printf("Text: %p\n", text);
