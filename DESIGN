@@ -68,8 +68,8 @@ jpt // goto px if bx == true
 psh // push bx onto stack
 pop // pop stack to ax
 cal // call px
-ent // make new call frame
-adj // remove arguments from frame
+ent // *--sp = (uint64_t)bp; bp = sp; sp = sp - bx;
+adj // sp = sp + bx
 lev // 
 lea // 
 lic // call libc of value bx

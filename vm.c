@@ -227,9 +227,9 @@ int virtualMachine() {
     } else if (op == NOT) {
       ax = !bx;
     } else if (op == LDI) {
-      ax = (uint64_t)(*(int64_t*)px);
+      ax = (uint64_t)(*(int64_t*)segment_mem_pos(px));
     } else if (op == LDC) {
-      ax = (uint64_t)(*(char*)px);
+      ax = (uint64_t)(*(char*)segment_mem_pos(px));
     } else if (op == LDU) {
       ax = *segment_mem_pos(px);
     } else if (op == SDR) {
@@ -246,19 +246,19 @@ int virtualMachine() {
       ax = *sp++;
     } else if (op == CAL) {
       *--sp = (uint64_t)(pc+1);
-      pc = px;
+      pc = segment_mem_pos(px);
     } else if (op == ENT) {
       *--sp = (uint64_t)bp;
       bp = sp;
-      sp = sp - *pc++;
+      sp = sp - bx;
     } else if (op == ADJ) {
-      sp = sp + *pc++;
+      sp = sp + bx;
     } else if (op == LEV) {
       sp = bp;
       bp = (uint64_t*)*sp++;
       pc = (uint64_t*)*sp++;
     } else if (op == LEA) {
-      ax = (uint64_t)(bp + *pc++);
+      ax = (uint64_t)(bp + bx);
     } else if (op == LIC) {
       if (!callLibC(*pc++)) {
         return bx;
