@@ -6,6 +6,34 @@
 #include "instruction.h"
 int assembler(FILE *ftmp, FILE *fout);
 int preprocessor(FILE *fin, FILE *ftmp);
+void escaped_charactor(char* str) {
+  char *tmp, *tmp2;
+  char *mem = calloc(strlen(str)+1, sizeof(char));
+  printf("%s", str);
+  tmp = str;
+  while (*str != '\0') {
+    if (*str == '\\') {
+      if (*++str == 'n') {
+        *str = 10;
+      }
+    }
+    ++str;
+  }
+  str = tmp;
+  tmp2 = mem;
+  while (*str != '\0') {
+    if (*str == '\\') {
+      *mem++ = *++str;
+      ++str;
+    } else {
+      *mem++ = *str++;
+    }
+  }
+  memset(tmp, 0, strlen(tmp2)+1);
+  printf("%s", tmp2);
+  strcpy(tmp, tmp2);
+  free(tmp2);
+}
 int main(int argc, char* argv[]) {
   if (argc < 3) {
     printf("Bad arguments\n");
@@ -14,7 +42,7 @@ int main(int argc, char* argv[]) {
   FILE *fin, *fout, *ftmp;
   fin = fopen(argv[1], "r");
   fout = fopen(argv[2], "wb");
-  ftmp = fopen(".ohastmp", "w");
+  ftmp = fopen(".ohastmp", "r");
   if (!fin) {
     printf("File read fail.\n");
     return -1;
@@ -27,6 +55,7 @@ int main(int argc, char* argv[]) {
     printf("FILE cannot write.\n");
     return -1;
   }
+  fclose(ftmp);
   preprocessor(fin, ftmp);
   fclose(ftmp);
   ftmp = fopen(".ohastmp", "r");
@@ -73,7 +102,6 @@ int preprocessor(FILE *fin, FILE *ftmp) {
     } else if (!(strcmp(read, "TXT") &&
         strcmp(read, "DAT") &&
         strcmp(read, "BSS"))) {
-      count = 0;
     } else {
       ++count;
     }
@@ -221,7 +249,8 @@ int assembler(FILE *ftmp, FILE *fout) {
       continue;
     } else if (!strcmp(read, "ASCII")) {
       memset(read, 0, 256);
-      fscanf(ftmp, "%*s\n\"%[A-Za-z ]\"", read);
+      fscanf(ftmp, "%*s\n\"%[A-Za-z\\ ]\"", read);
+      escaped_charactor(read);
       fwrite(read, sizeof(char), sizeof(uint64_t)*(strlen(read)/sizeof(uint64_t) + 1) , fout);
       continue;
     } else if (!strcmp(read, "BYTE")) {

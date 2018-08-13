@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "instruction.h"
 #include "libc.h"
+#define version "alpha 0.0"
 uint64_t *text;
 uint64_t *stack;
 uint64_t *data;
@@ -30,14 +31,16 @@ int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
     return -1;
   }
   fread(&tmp, sizeof(uint64_t), 1, fPtr);
-  printf("Text: %p\n", text);
-  //pc = (uint64_t*)((uint64_t)text + tmp);
-  pc = text + 1;
-  printf("pc: %p\n", pc);
+  pc = (uint64_t*)((uint64_t)text + tmp);
   fread(&pro_text, sizeof(uint64_t), 1, fPtr);
   fread(&pro_data, sizeof(uint64_t), 1, fPtr);
   fread(&pro_bss, sizeof(uint64_t), 1, fPtr);
+  //pc = text + 1;
+#ifdef DEBUG
+  printf("Text: %p\n", text);
+  printf("pc: %p\n", pc);
   printf("%lu %lu %lu\n", (uint64_t)pro_text, (uint64_t)pro_data, (uint64_t)pro_bss);
+#endif
   fread(&tmp, sizeof(uint64_t), 1, fPtr);
   if (tmp != TXT) {
     printf("Executive file not correct as OHVM.\n");
@@ -110,6 +113,7 @@ int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
   return 0;
 }
 int main(int argc, char* argv[]) {
+  fprintf(stdout, "OH Virtual Machine "version"\n");
   if (argc < 2) {
     printf("Unexpect arguments\n");
     return -1;
@@ -145,7 +149,6 @@ int main(int argc, char* argv[]) {
   if (readBitCode(fPtr, text, data, bss) == -1) {
     return -1;
   }
-  printf("Done\n");
   px = bp = sp = (uint64_t*)((uint64_t)stack + poolsize);
   ax = 0;
   bx = 0;
