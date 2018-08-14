@@ -7,6 +7,8 @@ ohvm:vm.o libc.o
 	${CC} ${CFLAG} $^ -o $@
 ohas:as.o
 	${CC} ${CFLAG} $^ -o $@
+ohcc:cc.o
+	${CC} ${CFLAG} $^ -o $@
 %.o: %.c
 	${CC} ${CFLAG} -c $< -o $@
 clean:
