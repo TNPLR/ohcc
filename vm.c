@@ -17,10 +17,10 @@ uint64_t* segment_mem_pos(uint64_t* mem) {
     return (uint64_t*)((uint64_t)bss + ((uint64_t)mem - (uint64_t)pro_bss));
   } else if (mem >= pro_data) {
     return (uint64_t*)((uint64_t)data + ((uint64_t)mem - (uint64_t)pro_data));
-  } else if (mem > pro_text) {
+  } else if (mem >= pro_text) {
     return (uint64_t*)((uint64_t)text + ((uint64_t)mem - (uint64_t)pro_text));
   }
-  return 0;
+  return NULL;
 }
 int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
     uint64_t *restrict data, uint64_t *restrict bss) {
@@ -126,19 +126,19 @@ int main(int argc, char* argv[]) {
     return -1;
   }
   uint64_t poolsize = 4096;
-  if (!(text = (uint64_t*)malloc(poolsize))) {
+  if (!(text = malloc(poolsize))) {
     printf("Could not malloc(%lu) for text area.", poolsize);
     return -1;
   }
-  if (!(stack = (uint64_t*)malloc(poolsize))) {
+  if (!(stack = malloc(poolsize))) {
     printf("Could not malloc(%lu) for stack area.", poolsize);
     return -1;
   }
-  if (!(data = (uint64_t*)malloc(poolsize))) {
+  if (!(data = malloc(poolsize))) {
     printf("Could not malloc(%lu) for data area.", poolsize);
     return -1;
   }
-  if (!(bss = (uint64_t*)malloc(poolsize))) {
+  if (!(bss = malloc(poolsize))) {
     printf("Could not malloc(%lu) for bss area.", poolsize);
     return -1;
   }
@@ -151,6 +151,10 @@ int main(int argc, char* argv[]) {
     return -1;
   }
   px = bp = sp = (uint64_t*)((uint64_t)stack + poolsize);
+#ifdef DEBUG
+  printf("stack: %lu\n", (uint64_t)stack);
+  printf("px: %lu, bp: %lu, sp: %lu\n", (uint64_t)px, (uint64_t)bp, (uint64_t)sp);
+#endif
   ax = 0;
   bx = 0;
   cx = 0;
