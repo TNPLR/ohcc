@@ -1,4 +1,4 @@
-OHCC(OH Compiler Collections) is a compiler - optimizer - virtual machine of any support languages.
+OHCC(OH Compiler Collection) is a compiler - optimizer - virtual machine of any support languages.
 Any language will be change to C.
 Then, it will optimize C code.
 It will use VM to run this code.
