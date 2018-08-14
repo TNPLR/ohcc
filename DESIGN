@@ -1,8 +1,18 @@
-OHCC is a compiler - optimizer - virtual machine of any support languages.
+OHCC(OH Compiler Collections) is a compiler - optimizer - virtual machine of any support languages.
 Any language will be change to C.
 Then, it will optimize C code.
 It will use VM to run this code.
 
+Simple structure (* = under construct, # still planning)
+
+*ohc - The main OH Compilers
+#oh++ - The OH C++ Compiler 
+#ohpy - The OH Python Compiler
+#ohjs - The OH JavaScript Compiler
+*ohopt - The OH C Optimizer
+*ohcc - The OH C Compiler
+ohas - The OH Assembler
+ohvm - The OH Virtual Machine
 
 VM code (OHVM asm)
 
@@ -130,3 +140,7 @@ LABEL BSS
 (SOP) //recommend add this SOP
 BSS
 BSS
+
+
+ohcc - The OH C Compiler
+
