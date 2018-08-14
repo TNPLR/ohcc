@@ -11,7 +11,7 @@ int callLibC(uint64_t num) {
       ax = printf("%s",(char*)segment_mem_pos(px));
       break;
     case EXIT:
-      ax = printf("exit(%lu)\n", bx);
+      ax = bx;
       return 0;
     default:
       break;

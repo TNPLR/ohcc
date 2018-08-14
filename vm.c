@@ -114,7 +114,9 @@ int readBitCode(FILE *restrict fPtr, uint64_t *restrict text,
   return 0;
 }
 int main(int argc, char* argv[]) {
+#ifdef DEBUG
   fprintf(stdout, "OH Virtual Machine "version"\n");
+#endif
   if (argc < 2) {
     printf("Unexpect arguments\n");
     return -1;
@@ -158,7 +160,11 @@ int main(int argc, char* argv[]) {
   ax = 0;
   bx = 0;
   cx = 0;
+#ifdef DEBUG
+  printf("OH Virtual Machine exit with value %d.\n", virtualMachine());
+#else
   virtualMachine();
+#endif
   free(text);
   free(stack);
   free(data);
@@ -249,7 +255,7 @@ int virtualMachine() {
     } else if (op == POP) {
       ax = *sp++;
     } else if (op == CAL) {
-      *--sp = (uint64_t)(pc+1);
+      *--sp = (uint64_t)(pc);
       pc = segment_mem_pos(px);
     } else if (op == ENT) {
       *--sp = (uint64_t)bp;
