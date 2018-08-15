@@ -4,9 +4,9 @@
 enum instructions {
   LDQ,LDD,LDW,LDB,STQ,STD,STW,STB,LDRQ,LDRD,LDRW,LDRB,
   STRQ,STRD,STRW,STRB,LDI,CMP=0x20,MOV,ADD,SUB,MUL,DIV,
-  AND,ORR,EOR,ROL,ROR,SHL,SHR,JEQ=0x40,JNE,JLT,JGT,JLE,
-  JGE,JMP,CALL,RET,INT,PUSHQ=0x50,PUSHD,PUSHW,PUSHB,POPQ,
-  POPD,POPW,POPB
+  ADC,SBC,MLC,DVC,AND,ORR,EOR,ROL,ROR,SHL,SHR,JEQ=0x40,
+  JNE,JLT,JGT,JLE,JGE,JMP,CALL,RET,INT,PUSHQ=0x50,PUSHD,
+  PUSHW,PUSHB,POPQ,POPD,POPW,POPB
 };
 uint8_t *program;
 uint64_t R[16];
@@ -15,16 +15,32 @@ uint64_t data;
 uint64_t bss;
 uint64_t heap;
 uint64_t stack;
+inline uint64_t bitmask(int bits) {
+  return (0xFFFFFFFFFFFFFFFF >> (64 - bits));
+}
+inline uint64_t readBits(uint64_t input, int bit_start, int bit_end) {
+  input >>= bit_end;
+  return (input & bitmask(bit_start - bit_end + 1));
+}
+void r_type_instruction(op_register, op_const) {
+
+}
+void l_type_instruction(op_register, op_const) {
+
+}
+void j_type_instruction(op_const) {
+
+}
 int virtualMachine() {
-  /* Nothing */
   int op;
+  uint64_t op_register[3];
+  uint64_t op_const;
   while (1) {
     R[11] = *(uint64_t*)R[15];
-    R[15] = (uint64_t*)R[15] + 1;
+    R[15] = (uint64_t)((uint64_t*)R[15] + 1);
     op = R[11] >> 56;
-    
     if (op == LDQ) {
-
+      
     } else if (op == LDD) {
 
     } else if (op == LDW) {

@@ -81,6 +81,10 @@ R ADD Ra Rb Rc ---- Ra = Rb + Rc
 R SUB Ra Rb Rc ---- Ra = Rb - Rc
 R MUL Ra Rb Rc ---- Ra = Rb * Rc
 R DIV Ra Rb Rc ---- Ra = Rb / Rc
+R ADC Ra Rb Rc ---- Signed ADD
+R SBC Ra Rb Rc ---- Signed SUB
+R MLC Ra Rb Rc ---- Signed MUL
+R DVC Ra Rb Rc ---- Signed DIV
 R AND Ra Rb Rc ---- Ra = Rb & Rc
 R ORR Ra Rb Rc ---- Ra = Rb | Rc
 R EOR Ra Rb Rc ---- Ra = Rb ^ Rc
