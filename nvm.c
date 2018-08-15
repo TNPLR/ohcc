@@ -1,3 +1,11 @@
+/************************************************
+ * OH Virtual Machine
+ * Copyright TNPLR 2018
+ *
+ * This virtual machine can run OHVM bit code
+ * If have any problem, email me:
+ *   hsiaosvideo@gmail.com
+************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -93,34 +101,68 @@ int virtualMachine() {
       r_type_instruction(op_register, op_const);
       *(uint8_t*)(R[op_register[1]] + R[op_register[2]]) = (uint8_t) R[op_register[0]];
     } else if (op == LDI) {
-      l_type_instriction(op_register, op_const);
+      l_type_instruction(op_register, op_const);
       R[op_register[0]] = R[op_register[1]] + op_const;
     } else if (op == CMP) {
-
+      r_type_instruction(op_register, op_const);
+      R[12] = R[12] & 0x3FFFFFFFFFFFFFFF;
+      if (R[op_register[0]] > R[op_register[1]]) {
+        R[12] |= 0x8000000000000000;
+      } else if (R[op_register[0]] == R[op_register[1]]) {
+        R[12] |= 0xC000000000000000;
+      } else if (R[op_register[0]] == R[op_register[1]]) {
+        R[12] |= 0x4000000000000000;
+      }
     } else if (op == MOV) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]];
     } else if (op == ADD) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] + R[op_register[2]];
     } else if (op == SUB) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] - R[op_register[2]];
     } else if (op == MUL) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] * R[op_register[2]];
     } else if (op == DIV) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] / R[op_register[2]];
+    } else if (op == ADC) {
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = (uint64_t)((int64_t)R[op_register[1]] + (int64_t)R[op_register[2]]);
+    } else if (op == SBC) {
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = (uint64_t)((int64_t)R[op_register[1]] - (int64_t)R[op_register[2]]);
+    } else if (op == MLC) {
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = (uint64_t)((int64_t)R[op_register[1]] * (int64_t)R[op_register[2]]);
+    } else if (op == DVC) {
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = (uint64_t)((int64_t)R[op_register[1]] / (int64_t)R[op_register[2]]);
     } else if (op == AND) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] & R[op_register[2]];
     } else if (op == ORR) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] | R[op_register[2]];
     } else if (op == EOR) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] ^ R[op_register[2]];
     } else if (op == ROL) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = (R[op_register[1]] >> (64 - R[op_register[2]])) |
+                          (R[op_register[1]] << R[op_register[2]]);
     } else if (op == ROR) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = (R[op_register[1]] << (64 - R[op_register[2]])) |
+                          (R[op_register[1]] >> R[op_register[2]]);
     } else if (op == SHL) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] << R[op_register[2]];
     } else if (op == SHR) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] >> R[op_register[2]];
     } else if (op == JEQ) {
 
     } else if (op == JNE) {
