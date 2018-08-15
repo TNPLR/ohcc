@@ -49,6 +49,7 @@ Type J [**OP**][*************************** 56 BITS Cx ***************]
 /*********************************
  * Memory Commands
 *********************************/
+///////Num 00
 L LDQ Ra Rb Cx ---- Ra = *(Rb + Cx)
 L LDD Ra Rb Cx ---- Ra = *(uint32_t*)(Rb + Cx)
 L LDW Ra Rb Cx ---- Ra = *(uint16_t*)(Rb + Cx)
@@ -73,6 +74,7 @@ L LDI Ra Rb Cx ---- Ra = Rb + Cx
 /*********************************
  * Compare Commands
 *********************************/
+///////Num 20
 R CMP Ra Rb    ---- Compare Ra and Rb => R12 Flag Register
 R MOV Ra Rb    ---- Ra = Rb
 R ADD Ra Rb Rc ---- Ra = Rb + Rc
@@ -90,6 +92,7 @@ R SHR Ra Rb Rc ---- Ra = Rb >> Rc
 /*********************************
  * Jump Commands
 *********************************/
+///////Num 40
 J JEQ Cx ---- Jump to Cx if Equal
 J JNE Cx ---- Jump to Cx if Not Equal
 J JLT Cx ---- Jump to Cx if Less than
@@ -99,14 +102,12 @@ J JGE Cx ---- Jump to Cx if Greater than or Equal
 J JMP Cx ---- Jump to Cx
 J CALL Cx ---- Call Cx
 J RET Cx ---- Return
-/*********************************
- * Hardware Commands
-*********************************/
 J INT Cx ---- Call the VM Interrupt
 
 /*********************************
  * Stack Commands
 *********************************/
+///////Num 50
 A PUSHQ Ra ---- Push Ra onto stack (64 bits)
 A PUSHD Ra ---- Push Ra onto stack (32 bits)
 A PUSHW Ra ---- Push Ra onto stack (16 bits)
