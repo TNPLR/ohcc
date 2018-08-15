@@ -17,6 +17,111 @@ uint64_t heap;
 uint64_t stack;
 int virtualMachine() {
   /* Nothing */
+  int op;
+  while (1) {
+    R[11] = *(uint64_t*)R[15];
+    R[15] = (uint64_t*)R[15] + 1;
+    op = R[11] >> 56;
+    
+    if (op == LDQ) {
+
+    } else if (op == LDD) {
+
+    } else if (op == LDW) {
+
+    } else if (op == LDB) {
+
+    } else if (op == STQ) {
+
+    } else if (op == STD) {
+
+    } else if (op == STW) {
+
+    } else if (op == STB) {
+
+    } else if (op == LDRQ) {
+
+    } else if (op == LDRD) {
+
+    } else if (op == LDRW) {
+
+    } else if (op == LDRB) {
+
+    } else if (op == STRQ) {
+
+    } else if (op == STRD) {
+
+    } else if (op == STRW) {
+
+    } else if (op == STRB) {
+
+    } else if (op == CMP) {
+
+    } else if (op == MOV) {
+
+    } else if (op == ADD) {
+
+    } else if (op == SUB) {
+
+    } else if (op == MUL) {
+
+    } else if (op == DIV) {
+
+    } else if (op == AND) {
+
+    } else if (op == ORR) {
+
+    } else if (op == EOR) {
+
+    } else if (op == ROL) {
+
+    } else if (op == ROR) {
+
+    } else if (op == SHL) {
+
+    } else if (op == SHR) {
+
+    } else if (op == JEQ) {
+
+    } else if (op == JNE) {
+
+    } else if (op == JLT) {
+
+    } else if (op == JGT) {
+
+    } else if (op == JLE) {
+
+    } else if (op == JGE) {
+
+    } else if (op == JMP) {
+
+    } else if (op == CALL) {
+
+    } else if (op == RET) {
+
+    } else if (op == INT) {
+
+    } else if (op == PUSHQ) {
+
+    } else if (op == PUSHD) {
+
+    } else if (op == PUSHW) {
+
+    } else if (op == PUSHB) {
+
+    } else if (op == POPQ) {
+
+    } else if (op == POPD) {
+
+    } else if (op == POPW) {
+
+    } else if (op == POPB) {
+
+    } else {
+      fprintf(stderr, "Error: Unknown Instruction Error\n");
+      return 1;
+    }
+  }
   return 0;
 }
 int initVM(char *filename) {
@@ -70,6 +175,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Virtual Machine Terminated\n");
     return 1;
   }
+  virtualMachine();
   haltVM();
   return 0;
 }
