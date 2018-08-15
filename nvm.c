@@ -22,14 +22,19 @@ inline uint64_t readBits(uint64_t input, int bit_start, int bit_end) {
   input >>= bit_end;
   return (input & bitmask(bit_start - bit_end + 1));
 }
-void r_type_instruction(op_register, op_const) {
-
+void r_type_instruction(uint64_t* op_register, uint64_t op_const) {
+  op_register[0] = readBits(R[11], 55, 52);
+  op_register[1] = readBits(R[11], 51, 48);
+  op_register[2] = readBits(R[11], 47, 44);
+  op_const = readBits(R[11], 43, 0);
 }
-void l_type_instruction(op_register, op_const) {
-
+void l_type_instruction(uint64_t* op_register, uint64_t op_const) {
+  op_register[0] = readBits(R[11], 55, 52);
+  op_register[1] = readBits(R[11], 51, 48);
+  op_const = readBits(R[11], 47, 0);
 }
-void j_type_instruction(op_const) {
-
+void j_type_instruction(uint64_t op_const) {
+  op_const = readBits(R[11], 55, 0);
 }
 int virtualMachine() {
   int op;
@@ -40,37 +45,56 @@ int virtualMachine() {
     R[15] = (uint64_t)((uint64_t*)R[15] + 1);
     op = R[11] >> 56;
     if (op == LDQ) {
-      
+      l_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint64_t*)(R[op_register[1]] + op_const);
     } else if (op == LDD) {
-
+      l_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint32_t*)(R[op_register[1]] + op_const);
     } else if (op == LDW) {
-
+      l_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint16_t*)(R[op_register[1]] + op_const);
     } else if (op == LDB) {
-
+      l_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint8_t*)(R[op_register[1]] + op_const);
     } else if (op == STQ) {
-
+      l_type_instruction(op_register, op_const);
+      *(uint64_t*)(R[op_register[1]] + op_const) = R[op_register[0]];
     } else if (op == STD) {
-
+      l_type_instruction(op_register, op_const);
+      *(uint32_t*)(R[op_register[1]] + op_const) = (uint32_t) R[op_register[0]];
     } else if (op == STW) {
-
+      l_type_instruction(op_register, op_const);
+      *(uint16_t*)(R[op_register[1]] + op_const) = (uint16_t) R[op_register[0]];
     } else if (op == STB) {
-
+      l_type_instruction(op_register, op_const);
+      *(uint8_t*)(R[op_register[1]] + op_const) = (uint8_t) R[op_register[0]];
     } else if (op == LDRQ) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint64_t*)(R[op_register[1]] + R[op_register[2]]);
     } else if (op == LDRD) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint32_t*)(R[op_register[1]] + R[op_register[2]]);
     } else if (op == LDRW) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint16_t*)(R[op_register[1]] + R[op_register[2]]);
     } else if (op == LDRB) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint8_t*)(R[op_register[1]] + R[op_register[2]]);
     } else if (op == STRQ) {
-
+      r_type_instruction(op_register, op_const);
+      *(uint64_t*)(R[op_register[1]] + R[op_register[2]]) = R[op_register[0]];
     } else if (op == STRD) {
-
+      r_type_instruction(op_register, op_const);
+      *(uint32_t*)(R[op_register[1]] + R[op_register[2]]) = (uint32_t) R[op_register[0]];
     } else if (op == STRW) {
-
+      r_type_instruction(op_register, op_const);
+      *(uint16_t*)(R[op_register[1]] + R[op_register[2]]) = (uint16_t) R[op_register[0]];
     } else if (op == STRB) {
-
+      r_type_instruction(op_register, op_const);
+      *(uint8_t*)(R[op_register[1]] + R[op_register[2]]) = (uint8_t) R[op_register[0]];
+    } else if (op == LDI) {
+      l_type_instriction(op_register, op_const);
+      R[op_register[0]] = R[op_register[1]] + op_const;
     } else if (op == CMP) {
 
     } else if (op == MOV) {
