@@ -16,11 +16,11 @@ R7
 R8
 R9
 R10
-R11
-R12 - Flag Register
-R13 - Stack Pointer
-R14 - Base Pointer
-R15 - Program Counter
+R11 - Command Register - Store the Command is now running
+R12 - Flag Register    - Store the Flags
+R13 - Stack Pointer    - Store the Stack top
+R14 - Base Pointer     - Store the Base of Stack (function call)
+R15 - Program Counter  - Store where the cpu is running
 
 
 R12 - Flag Register
@@ -116,3 +116,16 @@ A POPQ  Ra ---- Pop stack to Ra (64 bits)
 A POPD  Ra ---- Pop stack to Ra (32 bits)
 A POPW  Ra ---- Pop stack to Ra (16 bits)
 A POPB  Ra ---- Pop stack to Ra (8 bits)
+
+NVM Bit Code
+
+TOTAL PROGRAM SIZE
+TEXT SECTION QUAD
+DATA SECTION QUAD
+BSS SECTION QUAD
+HEAP SECTION QUAD
+STACK SIZE
+ENTRY POINT
+QUAD
+QUAD
+// Program ...
