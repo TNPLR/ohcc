@@ -1,0 +1,117 @@
+CPU YX
+64 bit
+
+/*********************************
+ * Registers
+*********************************/
+
+R0 - Zero register (Always 0)
+R1
+R2
+R3
+R4
+R5
+R6
+R7
+R8
+R9
+R10
+R11
+R12 - Flag Register
+R13 - Stack Pointer
+R14 - Base Pointer
+R15 - Program Counter
+
+
+R12 - Flag Register
+63   58   2 0
+[PZXXXX...XXX]
+P - Compare Flag
+Z - Zero Flag
+
+P - Z
+1 - 0 Greater than
+1 - 1 Equal
+0 - 1 Less than
+
+
+/*********************************
+ * Instructions
+*********************************/
+
+Type of Instructions
+      63      55  51  47  43          31              15       7      0
+Type R [**OP**][Ra][Rb][Rc][*************** 44 BITS Cx ***************]
+Type L [**OP**][Ra][Rb][******************* 48 BITS Cx ***************]
+Type J [**OP**][*************************** 56 BITS Cx ***************]
+
+
+/*********************************
+ * Memory Commands
+*********************************/
+L LDQ Ra Rb Cx ---- Ra = *(Rb + Cx)
+L LDD Ra Rb Cx ---- Ra = *(uint32_t*)(Rb + Cx)
+L LDW Ra Rb Cx ---- Ra = *(uint16_t*)(Rb + Cx)
+L LDB Ra Rb Cx ---- Ra = *(uint8_t*)(Rb + Cx)
+L STQ Ra Rb Cx ---- *(Rb + Cx) = Ra
+L STD Ra Rb Cx ---- *(Rb + Cx) = (uint32_t*)Ra
+L STW Ra Rb Cx ---- *(Rb + Cx) = (uint16_t*)Ra
+L STB Ra Rb Cx ---- *(Rb + Cx) = (uint8_t*)Ra
+
+R LDRQ Ra Rb Rc ---- Ra = *(Rb + Rc)
+R LDRD Ra Rb Rc ---- Ra = *(uint32_t*)(Rb + Rc)
+R LDRW Ra Rb Rc ---- Ra = *(uint16_t*)(Rb + Rc)
+R LDRB Ra Rb Rc ---- Ra = *(uint8_t*)(Rb + Rc)
+R STRQ Ra Rb Rc ---- *(Rb + Rc) = Ra
+R STRD Ra Rb Rc ---- *(Rb + Rc) = (uint32_t*)Ra
+R STRW Ra Rb Rc ---- *(Rb + Rc) = (uint16_t*)Ra
+R STRB Ra Rb Rc ---- *(Rb + Rc) = (uint8_t*)Ra
+
+L LDI Ra Rb Cx ---- Ra = Rb + Cx
+
+
+/*********************************
+ * Compare Commands
+*********************************/
+R CMP Ra Rb    ---- Compare Ra and Rb => R12 Flag Register
+R MOV Ra Rb    ---- Ra = Rb
+R ADD Ra Rb Rc ---- Ra = Rb + Rc
+R SUB Ra Rb Rc ---- Ra = Rb - Rc
+R MUL Ra Rb Rc ---- Ra = Rb * Rc
+R DIV Ra Rb Rc ---- Ra = Rb / Rc
+R AND Ra Rb Rc ---- Ra = Rb & Rc
+R ORR Ra Rb Rc ---- Ra = Rb | Rc
+R EOR Ra Rb Rc ---- Ra = Rb ^ Rc
+R ROL Ra Rb Rc ---- Ra = Rb rotate left Rc bits
+R ROR Ra Rb Rc ---- Ra = Rb rotate right Rc bits
+R SHL Ra Rb Rc ---- Ra = Rb << Rc
+R SHR Ra Rb Rc ---- Ra = Rb >> Rc
+
+/*********************************
+ * Jump Commands
+*********************************/
+J JEQ Cx ---- Jump to Cx if Equal
+J JNE Cx ---- Jump to Cx if Not Equal
+J JLT Cx ---- Jump to Cx if Less than
+J JGT Cx ---- Jump to Cx if Greater than
+J JLE Cx ---- Jump to Cx if Less than or Equal
+J JGE Cx ---- Jump to Cx if Greater than or Equal
+J JMP Cx ---- Jump to Cx
+J CALL Cx ---- Call Cx
+J RET Cx ---- Return
+/*********************************
+ * Hardware Commands
+*********************************/
+J INT Cx ---- Call the VM Interrupt
+
+/*********************************
+ * Stack Commands
+*********************************/
+A PUSHQ Ra ---- Push Ra onto stack (64 bits)
+A PUSHD Ra ---- Push Ra onto stack (32 bits)
+A PUSHW Ra ---- Push Ra onto stack (16 bits)
+A PUSHB Ra ---- Push Ra onto stack (8 bits)
+A POPQ  Ra ---- Pop stack to Ra (64 bits)
+A POPD  Ra ---- Pop stack to Ra (32 bits)
+A POPW  Ra ---- Pop stack to Ra (16 bits)
+A POPB  Ra ---- Pop stack to Ra (8 bits)
