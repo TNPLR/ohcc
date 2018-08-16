@@ -44,6 +44,10 @@ void l_type_instruction(uint64_t* op_register, uint64_t op_const) {
 void j_type_instruction(uint64_t op_const) {
   op_const = readBits(R[11], 55, 0);
 }
+uint64_t cmpValue(uint64_t R) {
+  R >>= 62;
+  return R;
+}
 int virtualMachine() {
   int op;
   uint64_t op_register[3];
@@ -164,41 +168,79 @@ int virtualMachine() {
       r_type_instruction(op_register, op_const);
       R[op_register[0]] = R[op_register[1]] >> R[op_register[2]];
     } else if (op == JEQ) {
-
+      j_type_instruction(op_const);
+      if (cmpValue(R[12]) == 0x3) {
+        R[15] += (int64_t)op_const;
+      }
     } else if (op == JNE) {
-
+      j_type_instruction(op_const);
+      if (cmpValue(R[12]) != 0x3) {
+        R[15] += (int64_t)op_const;
+      }
     } else if (op == JLT) {
-
+      j_type_instruction(op_const);
+      if (cmpValue(R[12]) == 0x1) {
+        R[15] += (int64_t)op_const;
+      }
     } else if (op == JGT) {
-
+      j_type_instruction(op_const);
+      if (cmpValue(R[12]) == 0x2) {
+        R[15] += (int64_t)op_const;
+      }
     } else if (op == JLE) {
-
+      j_type_instruction(op_const);
+      if (cmpValue(R[12]) != 0x2) {
+        R[15] += (int64_t)op_const;
+      }
     } else if (op == JGE) {
-
+      j_type_instruction(op_const);
+      if (cmpValue(R[12]) != 0x1) {
+        R[15] += (int64_t)op_const;
+      }
     } else if (op == JMP) {
-
+      j_type_instruction(op_const);
+      R[15] += (int64_t)op_const;
     } else if (op == CALL) {
-
+      j_type_instruction(op_const);
+      R[14] = R[15];
+      R[15] += (int64_t)op_const;
     } else if (op == RET) {
-
+      j_type_instruction(op_const);
+      R[15] = R[14];
     } else if (op == INT) {
-
+      /* Not doing anything now */
     } else if (op == PUSHQ) {
-
+      r_type_instruction(op_register, op_const);
+      R[13] -= sizeof(uint64_t);
+      *(uint64_t*)R[13] = R[op_register[0]];
     } else if (op == PUSHD) {
-
+      r_type_instruction(op_register, op_const);
+      R[13] -= sizeof(uint32_t);
+      *(uint32_t*)R[13] = (uint32_t)R[op_register[0]];
     } else if (op == PUSHW) {
-
+      r_type_instruction(op_register, op_const);
+      R[13] -= sizeof(uint16_t);
+      *(uint16_t*)R[13] = (uint16_t)R[op_register[0]];
     } else if (op == PUSHB) {
-
+      r_type_instruction(op_register, op_const);
+      R[13] -= sizeof(uint8_t);
+      *(uint8_t*)R[13] = (uint8_t)R[op_register[0]];
     } else if (op == POPQ) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint64_t*)R[13];
+      R[13] += sizeof(uint64_t);
     } else if (op == POPD) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint32_t*)R[13];
+      R[13] += sizeof(uint32_t);
     } else if (op == POPW) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint16_t*)R[13];
+      R[13] += sizeof(uint16_t);
     } else if (op == POPB) {
-
+      r_type_instruction(op_register, op_const);
+      R[op_register[0]] = *(uint8_t*)R[13];
+      R[13] += sizeof(uint8_t);
     } else {
       fprintf(stderr, "Error: Unknown Instruction Error\n");
       return 1;
