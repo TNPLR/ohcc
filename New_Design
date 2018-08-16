@@ -50,76 +50,76 @@ Type J [**OP**][*************************** 56 BITS Cx ***************]
  * Memory Commands
 *********************************/
 ///////Num 00
-L LDQ Ra Rb Cx ---- Ra = *(Rb + Cx)
-L LDD Ra Rb Cx ---- Ra = *(uint32_t*)(Rb + Cx)
-L LDW Ra Rb Cx ---- Ra = *(uint16_t*)(Rb + Cx)
-L LDB Ra Rb Cx ---- Ra = *(uint8_t*)(Rb + Cx)
-L STQ Ra Rb Cx ---- *(Rb + Cx) = Ra
-L STD Ra Rb Cx ---- *(Rb + Cx) = (uint32_t*)Ra
-L STW Ra Rb Cx ---- *(Rb + Cx) = (uint16_t*)Ra
-L STB Ra Rb Cx ---- *(Rb + Cx) = (uint8_t*)Ra
+00 L LDQ Ra Rb Cx ---- Ra = *(Rb + Cx)
+01 L LDD Ra Rb Cx ---- Ra = *(uint32_t*)(Rb + Cx)
+02 L LDW Ra Rb Cx ---- Ra = *(uint16_t*)(Rb + Cx)
+03 L LDB Ra Rb Cx ---- Ra = *(uint8_t*)(Rb + Cx)
+04 L STQ Ra Rb Cx ---- *(Rb + Cx) = Ra
+05 L STD Ra Rb Cx ---- *(Rb + Cx) = (uint32_t*)Ra
+06 L STW Ra Rb Cx ---- *(Rb + Cx) = (uint16_t*)Ra
+07 L STB Ra Rb Cx ---- *(Rb + Cx) = (uint8_t*)Ra
 
-R LDRQ Ra Rb Rc ---- Ra = *(Rb + Rc)
-R LDRD Ra Rb Rc ---- Ra = *(uint32_t*)(Rb + Rc)
-R LDRW Ra Rb Rc ---- Ra = *(uint16_t*)(Rb + Rc)
-R LDRB Ra Rb Rc ---- Ra = *(uint8_t*)(Rb + Rc)
-R STRQ Ra Rb Rc ---- *(Rb + Rc) = Ra
-R STRD Ra Rb Rc ---- *(Rb + Rc) = (uint32_t*)Ra
-R STRW Ra Rb Rc ---- *(Rb + Rc) = (uint16_t*)Ra
-R STRB Ra Rb Rc ---- *(Rb + Rc) = (uint8_t*)Ra
+08 R LDRQ Ra Rb Rc ---- Ra = *(Rb + Rc)
+09 R LDRD Ra Rb Rc ---- Ra = *(uint32_t*)(Rb + Rc)
+0A R LDRW Ra Rb Rc ---- Ra = *(uint16_t*)(Rb + Rc)
+0B R LDRB Ra Rb Rc ---- Ra = *(uint8_t*)(Rb + Rc)
+0C R STRQ Ra Rb Rc ---- *(Rb + Rc) = Ra
+0D R STRD Ra Rb Rc ---- *(Rb + Rc) = (uint32_t*)Ra
+0E R STRW Ra Rb Rc ---- *(Rb + Rc) = (uint16_t*)Ra
+0F R STRB Ra Rb Rc ---- *(Rb + Rc) = (uint8_t*)Ra
 
-L LDI Ra Rb Cx ---- Ra = Rb + Cx
+10 L LDI Ra Rb Cx ---- Ra = Rb + Cx
 
 
 /*********************************
  * Compare Commands
 *********************************/
 ///////Num 20
-R CMP Ra Rb    ---- Compare Ra and Rb => R12 Flag Register
-R MOV Ra Rb    ---- Ra = Rb
-R ADD Ra Rb Rc ---- Ra = Rb + Rc
-R SUB Ra Rb Rc ---- Ra = Rb - Rc
-R MUL Ra Rb Rc ---- Ra = Rb * Rc
-R DIV Ra Rb Rc ---- Ra = Rb / Rc
-R ADC Ra Rb Rc ---- Signed ADD
-R SBC Ra Rb Rc ---- Signed SUB
-R MLC Ra Rb Rc ---- Signed MUL
-R DVC Ra Rb Rc ---- Signed DIV
-R AND Ra Rb Rc ---- Ra = Rb & Rc
-R ORR Ra Rb Rc ---- Ra = Rb | Rc
-R EOR Ra Rb Rc ---- Ra = Rb ^ Rc
-R ROL Ra Rb Rc ---- Ra = Rb rotate left Rc bits
-R ROR Ra Rb Rc ---- Ra = Rb rotate right Rc bits
-R SHL Ra Rb Rc ---- Ra = Rb << Rc
-R SHR Ra Rb Rc ---- Ra = Rb >> Rc
+20 R CMP Ra Rb    ---- Compare Ra and Rb => R12 Flag Register
+21 R MOV Ra Rb    ---- Ra = Rb
+22 R ADD Ra Rb Rc ---- Ra = Rb + Rc
+23 R SUB Ra Rb Rc ---- Ra = Rb - Rc
+24 R MUL Ra Rb Rc ---- Ra = Rb * Rc
+25 R DIV Ra Rb Rc ---- Ra = Rb / Rc
+26 R ADC Ra Rb Rc ---- Signed ADD
+27 R SBC Ra Rb Rc ---- Signed SUB
+28 R MLC Ra Rb Rc ---- Signed MUL
+29 R DVC Ra Rb Rc ---- Signed DIV
+2A R AND Ra Rb Rc ---- Ra = Rb & Rc
+2B R ORR Ra Rb Rc ---- Ra = Rb | Rc
+2C R EOR Ra Rb Rc ---- Ra = Rb ^ Rc
+2D R ROL Ra Rb Rc ---- Ra = Rb rotate left Rc bits
+2E R ROR Ra Rb Rc ---- Ra = Rb rotate right Rc bits
+2F R SHL Ra Rb Rc ---- Ra = Rb << Rc
+30 R SHR Ra Rb Rc ---- Ra = Rb >> Rc
 
 /*********************************
  * Jump Commands
 *********************************/
 ///////Num 40
-J JEQ Cx ---- Jump to Cx if Equal
-J JNE Cx ---- Jump to Cx if Not Equal
-J JLT Cx ---- Jump to Cx if Less than
-J JGT Cx ---- Jump to Cx if Greater than
-J JLE Cx ---- Jump to Cx if Less than or Equal
-J JGE Cx ---- Jump to Cx if Greater than or Equal
-J JMP Cx ---- Jump to Cx
-J CALL Cx ---- Call Cx
-J RET Cx ---- Return
-J INT Cx ---- Call the VM Interrupt
+40 J JEQ Cx ---- Jump to Cx if Equal
+41 J JNE Cx ---- Jump to Cx if Not Equal
+42 J JLT Cx ---- Jump to Cx if Less than
+43 J JGT Cx ---- Jump to Cx if Greater than
+44 J JLE Cx ---- Jump to Cx if Less than or Equal
+45 J JGE Cx ---- Jump to Cx if Greater than or Equal
+46 J JMP Cx ---- Jump to Cx
+47 J CALL Cx ---- Call Cx
+48 J RET Cx ---- Return
+49 J INT Cx ---- Call the VM Interrupt
 
 /*********************************
  * Stack Commands
 *********************************/
 ///////Num 50
-A PUSHQ Ra ---- Push Ra onto stack (64 bits)
-A PUSHD Ra ---- Push Ra onto stack (32 bits)
-A PUSHW Ra ---- Push Ra onto stack (16 bits)
-A PUSHB Ra ---- Push Ra onto stack (8 bits)
-A POPQ  Ra ---- Pop stack to Ra (64 bits)
-A POPD  Ra ---- Pop stack to Ra (32 bits)
-A POPW  Ra ---- Pop stack to Ra (16 bits)
-A POPB  Ra ---- Pop stack to Ra (8 bits)
+50 A PUSHQ Ra ---- Push Ra onto stack (64 bits)
+51 A PUSHD Ra ---- Push Ra onto stack (32 bits)
+52 A PUSHW Ra ---- Push Ra onto stack (16 bits)
+53 A PUSHB Ra ---- Push Ra onto stack (8 bits)
+54 A POPQ  Ra ---- Pop stack to Ra (64 bits)
+55 A POPD  Ra ---- Pop stack to Ra (32 bits)
+56 A POPW  Ra ---- Pop stack to Ra (16 bits)
+57 A POPB  Ra ---- Pop stack to Ra (8 bits)
 
 NVM Bit Code
 
@@ -130,6 +130,5 @@ BSS SECTION QUAD
 HEAP SECTION QUAD
 STACK SIZE
 ENTRY POINT
-QUAD
 QUAD
 // Program ...
