@@ -24,7 +24,7 @@ enum instructions {
   PUSHW,PUSHB,POPQ,POPD,POPW,POPB
 };
 enum interrupt {
-  EXIT=0x80
+  EXIT=0x80,PRINTF
 };
 /* interrupt_call 
  * If the return value equal 0 then keep going
@@ -33,6 +33,8 @@ enum interrupt {
 int interrupt_call(uint64_t num) {
   if (num == EXIT) {
     return 1;
+  } else if (num == PRINTF) {
+    printf((char*)R[1]);
   } else {
     return 1;
   }
