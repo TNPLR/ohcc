@@ -132,3 +132,20 @@ STACK SIZE
 ENTRY POINT
 QUAD
 // Program ...
+
+OH assembly
+
+RESQ Cx
+RESD Cx
+RESW Cx
+RESB Cx
+
+QUAD
+DWORD
+WORD
+BYTE
+
+LABEL:
+
+ORG
+EQU

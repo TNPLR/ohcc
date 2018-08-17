@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "ncpu.h"
 uint8_t *program;
 uint64_t R[16];
 uint64_t text;
@@ -16,16 +17,6 @@ uint64_t data;
 uint64_t bss;
 uint64_t heap;
 uint64_t stack;
-enum instructions {
-  LDQ,LDD,LDW,LDB,STQ,STD,STW,STB,LDRQ,LDRD,LDRW,LDRB,
-  STRQ,STRD,STRW,STRB,LDI,CMP=0x20,MOV,ADD,SUB,MUL,DIV,
-  ADC,SBC,MLC,DVC,AND,ORR,EOR,ROL,ROR,SHL,SHR,JEQ=0x40,
-  JNE,JLT,JGT,JLE,JGE,JMP,CALL,RET,INT,PUSHQ=0x50,PUSHD,
-  PUSHW,PUSHB,POPQ,POPD,POPW,POPB
-};
-enum interrupt {
-  EXIT=0x80,PRINTF
-};
 /* interrupt_call 
  * If the return value equal 0 then keep going
  * Else stop the program
@@ -38,6 +29,7 @@ int interrupt_call(uint64_t num) {
   } else {
     return 1;
   }
+  return 0;
 }
 inline uint64_t bitmask(int bits) {
   return (0xFFFFFFFFFFFFFFFF >> (64 - bits));
