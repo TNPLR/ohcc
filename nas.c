@@ -23,11 +23,19 @@ int var_count = 0;
 int pro_count = 0;
 uint64_t pos = 0;
 void print_pass_one(FILE *fin) {
+  fprintf(stdout, "****************PASS ONE****************\n");
   char tmp[256];
   for (int i = 0; i < pro_count; ++i) {
     fgets(tmp,255,fin);
     tmp[strcspn(tmp,"\n")] = 0;
-    fprintf(stdout, "%04x\t%s\t\t%02x\n",program[i].pos, tmp, program[i].cmd);
+    fprintf(stdout, "%04lx\t%s\t\t%02lx\n",program[i].pos, tmp, program[i].cmd);
+  }
+}
+void print_symbol() {
+  fprintf(stdout, "**************SYMBOL TABLE**************\n");
+  for (int i = 0; i < var_count; ++i) {
+    pro_var[i].command[strcspn(pro_var[i].command, "\n")] = 0;
+    fprintf(stdout, "%04lx\t%s\t\t%02lx\n",pro_var[i].pos, pro_var[i].command, pro_var[i].cmd);
   }
 }
 void pos_check(char* line) {
@@ -144,6 +152,7 @@ void pos_check(char* line) {
     program[pro_count].pos = pos;
     pro_var[var_count].pos = pos;
     sscanf(line, "%*s %s", tmp);
+    uint64_t res = 0;
     if (!strcmp(tmp, "BYTE")) {
       program[pro_count].cmd = BYTE;
       pro_var[var_count].cmd = BYTE;
@@ -163,19 +172,23 @@ void pos_check(char* line) {
     } else if (!strcmp(tmp, "RESB")) {
       program[pro_count].cmd = RESB;
       pro_var[var_count].cmd = RESB;
-      ++pos;
+      sscanf(line, "%*s %*s %lu", &res);
+      pos += res;
     } else if (!strcmp(tmp, "RESW")) {
       program[pro_count].cmd = RESW;
       pro_var[var_count].cmd = RESW;
-      pos += 2;
+      sscanf(line, "%*s %*s %lu", &res);
+      pos += res*2;
     } else if (!strcmp(tmp, "RESD")) {
       program[pro_count].cmd = RESD;
       pro_var[var_count].cmd = RESD;
-      pos += 4;
+      sscanf(line, "%*s %*s %lu", &res);
+      pos += res*4;
     } else if (!strcmp(tmp, "RESQ")) {
       program[pro_count].cmd = RESQ;
       pro_var[var_count].cmd = RESQ;
-      pos += 8;
+      sscanf(line, "%*s %*s %lu", &res);
+      pos += res*8;
     } else {
       fprintf(stdout, "Unknown instruction\n");
     }
@@ -203,6 +216,7 @@ void assembly(char* in, char* out) {
   }
   rewind(fin);
   print_pass_one(fin);
+  print_symbol();
   fclose(fin);
   fclose(fout);
 }
