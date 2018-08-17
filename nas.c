@@ -42,35 +42,81 @@ void print_symbol() {
 uint64_t readRegister(char* str) {
   uint64_t tmp = 0;
   sscanf(str, "%*c%lu", &tmp);
-  printf("tmp:%lu\n",tmp);
   return tmp;
 }
 uint64_t convertToVBit(uint64_t cmd, char type, char* str) {
   uint64_t Rtmp[3];
   uint64_t const_value;
-  char A[5][5];
+  char A[5][32];
   if (type == 'R') {
     sscanf(str, "%*s %3[^,]%*c %3[^,]%*c %3[^,]", A[0], A[1], A[2]);
     Rtmp[0] = readRegister(A[0])&0xF;
     Rtmp[1] = readRegister(A[1])&0xF;
     Rtmp[2] = readRegister(A[2])&0xF;
-    printf("%s, %s, %s\n", A[0], A[1], A[2]);
-    printf("%lu, %lu, %lu\n", Rtmp[0], Rtmp[1], Rtmp[2]);
     return ((cmd<<56)|(Rtmp[0]<<52)|(Rtmp[1]<<48)|(Rtmp[2]<<44));
   } else if (type == 'L') {
-    sscanf(str, "%*s %3[^,]%*c %3[^,]%*c %lu", A[0], A[1], &const_value);
+    int j = 0;
+    sscanf(str, "%*s %3[^,]%*c %3[^,]%*c %s", A[0], A[1], A[2]);
     Rtmp[0] = readRegister(A[0])&0xF;
     Rtmp[1] = readRegister(A[1])&0xF;
+    for (int i = 0; i < var_count; ++i) {
+      if (!strcmp(A[2], pro_var[i].name)) {
+        const_value = pro_var[i].pos;
+        j = 1;
+        break;
+      }
+    }
+    if (!j) {
+      sscanf(A[2], "%lu", &const_value);
+    }
     return (cmd<<56)|(Rtmp[0]<<52)|(Rtmp[1]<<48)|(const_value&0xFFFFFFFFFFFF);
   } else if (type == 'J') {
-    sscanf(str, "%*s %lu", &const_value);
+    int j = 0;
+    sscanf(str, "%*s %s", A[0]);
+    for (int i = 0; i < var_count; ++i) {
+      if (!strcmp(A[0], pro_var[i].name)) {
+        const_value = pro_var[i].pos;
+        j = 1;
+        break;
+      }
+    }
+    if (!j) {
+      sscanf(A[0], "%lu", &const_value);
+    }
     return (cmd<<56)|(const_value&0xFFFFFFFFFFFFFF);
   } else if (type == 'D') {
+    uint64_t value;
+    if (cmd == RESB) {
+      sscanf(str, "%*s %*s %lu", &value);
+      return value;
+    } else if (cmd == RESW) {
+      sscanf(str, "%*s %*s %lu", &value);
+      return value*2;
+    } else if (cmd == RESD) {
+      sscanf(str, "%*s %*s %lu", &value);
+      return value*4;
+    } else if (cmd == RESQ) {
+      sscanf(str, "%*s %*s %lu", &value);
+      return value*8;
+    } else if (cmd == BYTE) {
+      sscanf(str, "%*s %*s \"%[^\"]", str);
+      return strlen(str)+1;
+    } else if (cmd == WORD) {
+      sscanf(str, "%*s %*s %lu", &value);
+      return value;
+    } else if (cmd == DWORD) {
+      sscanf(str, "%*s %*s %lu", &value);
+      return value;
+    } else if (cmd == QUAD) {
+      sscanf(str, "%*s %*s %lu", &value);
+      return value;
+    }
     return 0;
   }
   return 0;
 }
 void pass_two(FILE *fin, FILE *fout) {
+  fprintf(stdout, "****************PASS TWO****************\n");
   char tmp[256];
   uint64_t now_ins;
   now_ins = 1024;
@@ -90,8 +136,35 @@ void pass_two(FILE *fin, FILE *fout) {
   fwrite(&now_ins, sizeof(uint64_t), 1, fout);
   for (int i = 0; i < pro_count; ++i) {
     fgets(tmp, 255, fin);
-    fprintf(stdout, "...");
+    tmp[strcspn(tmp,"\n")] = 0;
     now_ins = convertToVBit(program[i].cmd, program[i].type, tmp);
+    if (program[i].type == 'D') {
+      if ((program[i].cmd == RESQ) ||
+          (program[i].cmd == RESD) ||
+          (program[i].cmd == RESW) ||
+          (program[i].cmd == RESB)) {
+        fwrite(&now_ins, sizeof(uint8_t), now_ins, fout);
+        fprintf(stdout, "%04lx\t%s\t\t%08lx\n",program[i].pos, tmp, now_ins);
+        continue;
+      } else if (program[i].cmd == BYTE) {
+        fwrite(&tmp, sizeof(char), now_ins, fout);
+        fprintf(stdout, "%04lx\t%s\t\t%08lx\n",program[i].pos, tmp, now_ins);
+        continue;
+      } else if (program[i].cmd == WORD) {
+        fwrite(&now_ins, sizeof(uint16_t), 1, fout);
+        fprintf(stdout, "%04lx\t%s\t\t%08lx\n",program[i].pos, tmp, now_ins);
+        continue;
+      } else if (program[i].cmd == DWORD) {
+        fwrite(&now_ins, sizeof(uint32_t), 1, fout);
+        fprintf(stdout, "%04lx\t%s\t\t%08lx\n",program[i].pos, tmp, now_ins);
+        continue;
+      } else if (program[i].cmd == QUAD) {
+        fwrite(&now_ins, sizeof(uint64_t), 1, fout);
+        fprintf(stdout, "%04lx\t%s\t\t%08lx\n",program[i].pos, tmp, now_ins);
+        continue;
+      }
+    }
+    fprintf(stdout, "%04lx\t%s\t\t%08lx\n",program[i].pos, tmp, now_ins);
     fwrite(&now_ins, sizeof(uint64_t), 1, fout);
   }
 }

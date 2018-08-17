@@ -61,7 +61,6 @@ int virtualMachine() {
   uint64_t op_const;
   while (1) {
     R[11] = *(uint64_t*)R[15];
-    R[15] = (uint64_t)((uint64_t*)R[15] + 1);
     op = R[11] >> 56;
     if (op == LDQ) {
       l_type_instruction(op_register, &op_const);
@@ -255,6 +254,7 @@ int virtualMachine() {
       fprintf(stderr, "Error: Unknown Instruction Error\n");
       return 1;
     }
+    R[15] = (uint64_t)((uint64_t*)R[15] + 1);
   }
   return 0;
 }
