@@ -1,8 +1,8 @@
 .PHONY: clean
 CC=gcc
-CFLAG=-O2 -Wall
+CFLAG=-O3 -Wall -flto
 
-all:ohvm ohas
+all:ohvm ohas nvm nas
 ohvm:vm.o libc.o
 	${CC} ${CFLAG} $^ -o $@
 ohas:as.o

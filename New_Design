@@ -112,14 +112,14 @@ Type J [**OP**][*************************** 56 BITS Cx ***************]
  * Stack Commands
 *********************************/
 ///////Num 50
-50 A PUSHQ Ra ---- Push Ra onto stack (64 bits)
-51 A PUSHD Ra ---- Push Ra onto stack (32 bits)
-52 A PUSHW Ra ---- Push Ra onto stack (16 bits)
-53 A PUSHB Ra ---- Push Ra onto stack (8 bits)
-54 A POPQ  Ra ---- Pop stack to Ra (64 bits)
-55 A POPD  Ra ---- Pop stack to Ra (32 bits)
-56 A POPW  Ra ---- Pop stack to Ra (16 bits)
-57 A POPB  Ra ---- Pop stack to Ra (8 bits)
+50 R PUSHQ Ra ---- Push Ra onto stack (64 bits)
+51 R PUSHD Ra ---- Push Ra onto stack (32 bits)
+52 R PUSHW Ra ---- Push Ra onto stack (16 bits)
+53 R PUSHB Ra ---- Push Ra onto stack (8 bits)
+54 R POPQ  Ra ---- Pop stack to Ra (64 bits)
+55 R POPD  Ra ---- Pop stack to Ra (32 bits)
+56 R POPW  Ra ---- Pop stack to Ra (16 bits)
+57 R POPB  Ra ---- Pop stack to Ra (8 bits)
 
 NVM Bit Code
 
