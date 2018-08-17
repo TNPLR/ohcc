@@ -2,12 +2,24 @@
 #include <stdint.h>
 #include <string.h>
 #include "ncpu.h"
+enum {
+  BYTE=0xF0,WORD,DWORD,QUAD,RESB,RESW,RESD,RESQ
+};
 struct command {
   uint64_t cmd;
   uint64_t pos;
 };
+struct variable {
+  char name[32];
+  char command[256];
+  uint64_t cmd;
+  uint64_t pos;
+};
+typedef struct variable VAR;
 typedef struct command CMD;
+VAR pro_var[16384];
 CMD program[16384];
+int var_count = 0;
 int pro_count = 0;
 uint64_t pos = 0;
 void print_pass_one(FILE *fin) {
@@ -126,7 +138,50 @@ void pos_check(char* line) {
   } else if (!strcmp(tmp, "POPB")) {
     program[pro_count].cmd = POPB;
   } else {
-    fprintf(stdout, "ERROR: Unknown instruction: %s", tmp);
+    tmp[strcspn(tmp,":")] = 0;
+    strcpy(pro_var[var_count].name, tmp);
+    strcpy(pro_var[var_count].command, line);
+    program[pro_count].pos = pos;
+    pro_var[var_count].pos = pos;
+    sscanf(line, "%*s %s", tmp);
+    if (!strcmp(tmp, "BYTE")) {
+      program[pro_count].cmd = BYTE;
+      pro_var[var_count].cmd = BYTE;
+      ++pos;
+    } else if (!strcmp(tmp, "WORD")) {
+      program[pro_count].cmd = WORD;
+      pro_var[var_count].cmd = WORD;
+      pos += 2;
+    } else if (!strcmp(tmp, "DWORD")) {
+      program[pro_count].cmd = DWORD;
+      pro_var[var_count].cmd = DWORD;
+      pos += 4;
+    } else if (!strcmp(tmp, "QUAD")) {
+      program[pro_count].cmd = QUAD;
+      pro_var[var_count].cmd = QUAD;
+      pos += 8;
+    } else if (!strcmp(tmp, "RESB")) {
+      program[pro_count].cmd = RESB;
+      pro_var[var_count].cmd = RESB;
+      ++pos;
+    } else if (!strcmp(tmp, "RESW")) {
+      program[pro_count].cmd = RESW;
+      pro_var[var_count].cmd = RESW;
+      pos += 2;
+    } else if (!strcmp(tmp, "RESD")) {
+      program[pro_count].cmd = RESD;
+      pro_var[var_count].cmd = RESD;
+      pos += 4;
+    } else if (!strcmp(tmp, "RESQ")) {
+      program[pro_count].cmd = RESQ;
+      pro_var[var_count].cmd = RESQ;
+      pos += 8;
+    } else {
+      fprintf(stdout, "Unknown instruction\n");
+    }
+    ++var_count;
+    ++pro_count;
+    return;
   }
   program[pro_count].pos = pos;
   ++pro_count;

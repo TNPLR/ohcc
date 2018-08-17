@@ -1,4 +1,4 @@
-#ifdef NCPU_H_
+#ifndef NCPU_H_
 #define NCPU_H_
 enum instructions {
   LDQ,LDD,LDW,LDB,STQ,STD,STW,STB,LDRQ,LDRD,LDRW,LDRB,
