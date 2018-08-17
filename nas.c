@@ -73,6 +73,21 @@ uint64_t convertToVBit(uint64_t cmd, char type, char* str) {
 void pass_two(FILE *fin, FILE *fout) {
   char tmp[256];
   uint64_t now_ins;
+  now_ins = 1024;
+  fwrite(&now_ins, sizeof(uint64_t), 1, fout);
+  now_ins = 0;
+  fwrite(&now_ins, sizeof(uint64_t), 1, fout);
+  now_ins = 0;
+  fwrite(&now_ins, sizeof(uint64_t), 1, fout);
+  now_ins = 0;
+  fwrite(&now_ins, sizeof(uint64_t), 1, fout);
+  now_ins = 512;
+  fwrite(&now_ins, sizeof(uint64_t), 1, fout);
+  now_ins = 512;
+  fwrite(&now_ins, sizeof(uint64_t), 1, fout);
+  now_ins = 0;
+  fwrite(&now_ins, sizeof(uint64_t), 1, fout);
+  fwrite(&now_ins, sizeof(uint64_t), 1, fout);
   for (int i = 0; i < pro_count; ++i) {
     fgets(tmp, 255, fin);
     fprintf(stdout, "...");
