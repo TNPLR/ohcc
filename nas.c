@@ -44,6 +44,30 @@ uint64_t readRegister(char* str) {
   sscanf(str, "%*c%lu", &tmp);
   return tmp;
 }
+void getFormatStr(char* str) {
+  int j = strlen(str)+1;
+  for (int i = 0; i < j; ++i) {
+    if (str[i] == '\\') {
+      ++i;
+      switch (str[i]) {
+        case 'n':
+          str[i] = 0x0A;
+          break;
+        case '\\':
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  int count = 0;
+  for (int i = 0; i < j; ++i) {
+    if (str[i] == '\\') {
+      continue;
+    }
+    str[count++] = str[i];
+  }
+}
 uint64_t convertToVBit(uint64_t cmd, char type, char* str) {
   uint64_t Rtmp[3];
   uint64_t const_value;
@@ -100,6 +124,7 @@ uint64_t convertToVBit(uint64_t cmd, char type, char* str) {
       return value*8;
     } else if (cmd == BYTE) {
       sscanf(str, "%*s %*s \"%[^\"]", str);
+      getFormatStr(str);
       return strlen(str)+1;
     } else if (cmd == WORD) {
       sscanf(str, "%*s %*s %lu", &value);
@@ -148,7 +173,12 @@ void pass_two(FILE *fin, FILE *fout) {
         continue;
       } else if (program[i].cmd == BYTE) {
         fwrite(&tmp, sizeof(char), now_ins, fout);
-        fprintf(stdout, "%04lx\t%s\t\t%08lx\n",program[i].pos, tmp, now_ins);
+        fprintf(stdout, "%04lx\t",program[i].pos);
+        int j = strlen(tmp);
+        for (int k = 0; k < j; ++k) {
+           fprintf(stdout, "%02X", tmp[k]);
+        }
+        fprintf(stdout, "\t\t%08lx\n",now_ins);
         continue;
       } else if (program[i].cmd == WORD) {
         fwrite(&now_ins, sizeof(uint16_t), 1, fout);
