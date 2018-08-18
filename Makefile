@@ -1,5 +1,5 @@
 CC=gcc
-CFLAG="-O3 -flto -Wall"
+CFLAG=-O3 -flto -Wall
 
 all:ohas ohvm
 ohas:nas.o
